@@ -1,0 +1,45 @@
+{
+  "name": "lavateinn",
+  "version": "1.0.0",
+  "description": "Tiny microservice framework with flexible.",
+  "author": "Star Inc.",
+  "homepage": "https://starinc.xyz",
+  "license": "MIT",
+  "main": "app.mjs",
+  "scripts": {
+    "dev": "nodemon app.mjs",
+    "start": "node app.mjs",
+    "lint": "npx lint-staged",
+    "lint:es": "eslint \"*.mjs\" \"src/**/*.mjs\"",
+    "lint:es:fix": "eslint \"*.mjs\" \"src/**/*.mjs\" --fix",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.mjs": "eslint"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.3",
+    "http-status-codes": "^2.2.0",
+    "node-cache": "^5.1.2",
+    "request-ip": "^3.3.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.17.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-jsdoc": "^48.2.3",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
+    "nodemon": "^2.0.13"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
