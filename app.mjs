@@ -1,6 +1,9 @@
 // Auto-load config
 import "./src/init/config.mjs";
 
+// Import process
+import process from "node:process";
+
 // Import modules
 import {
     APP_NAME as appName,
@@ -11,6 +14,10 @@ import {
 import {
     invokeApp,
 } from "./src/execute.mjs";
+
+import {
+    exitHandler as tmppathExitHandler,
+} from "./src/init/tmppath.mjs";
 
 // Define plugin promises
 const pluginPromises = [];
@@ -41,3 +48,17 @@ invokeApp().
     loadRoutes(routerNames).
     execute().
     then(displayStatus);
+
+// Handle exit signals
+const exitHandler = () => {
+    tmppathExitHandler();
+    process.exit(0);
+};
+const exitSignals = [
+    "SIGINT",
+    "SIGTERM",
+    "SIGQUIT",
+];
+exitSignals.forEach((signal) => {
+    process.on(signal, exitHandler);
+});

@@ -1,5 +1,4 @@
 // Import process
-import process from "node:process";
 import {
     tmpdir,
 } from "node:os";
@@ -31,16 +30,8 @@ export const useTmpPath = (name) => {
 };
 
 // Handle exit signals
-const exitSignalHandler = () => {
+export const exitHandler = () => {
     Object.values(tmpPathMap).forEach((path) => {
         rimrafSync(path);
     });
 };
-const exitSignals = [
-    "SIGINT",
-    "SIGTERM",
-    "SIGQUIT",
-];
-exitSignals.forEach((signal) => {
-    process.on(signal, exitSignalHandler);
-});
