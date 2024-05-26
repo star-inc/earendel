@@ -35,7 +35,6 @@ const exitSignalHandler = () => {
     Object.values(tmpPathMap).forEach((path) => {
         rimrafSync(path);
     });
-    process.exit(0);
 };
 const exitSignals = [
     "SIGINT",
