@@ -4,7 +4,7 @@
 import NodeCache from "node-cache";
 
 // Initialize node-cache
-const cache = new NodeCache({stdTTL: 100});
+const cache = new NodeCache({stdTTL: 7200});
 
 // Export as a function named useCache
 export const useCache = () => cache;
