@@ -26,32 +26,39 @@ const clientAuth = useClientAuth();
 router.get("/:token", clientAuth,
     (req, res) => {
         const cache = useCache();
-        if (cache.has(req.client)) {
-            const data = cache.get(req.client);
-            return res.send(data);
-        } else {
-            return res.sendStatus(StatusCodes.NOT_FOUND);
+        const token = req.client("text");
+
+        if (!cache.has(token)) {
+            res.sendStatus(StatusCodes.NOT_FOUND);
+            return;
         }
+
+        const data = cache.get(token);
+        res.send(data);
     },
 );
 
 router.put("/:token", clientAuth,
     (req, res) => {
         const cache = useCache();
-        cache.set(req.client, req.body);
-        return res.sendStatus(StatusCodes.OK);
+        const token = req.client("text");
+
+        cache.set(token, req.body);
+        res.sendStatus(StatusCodes.OK);
     },
 );
 
 router.delete("/:token", clientAuth,
     (req, res) => {
         const cache = useCache();
-        if (cache.has(req.client)) {
-            cache.del(req.client);
-            return res.sendStatus(StatusCodes.OK);
-        } else {
+        const token = req.client("text");
+
+        if (!cache.has(token)) {
             return res.sendStatus(StatusCodes.NOT_FOUND);
         }
+
+        cache.del(token);
+        res.sendStatus(StatusCodes.OK);
     },
 );
 

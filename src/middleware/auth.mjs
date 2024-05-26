@@ -11,6 +11,6 @@ export const useClientAuth = () => (req, res, next) => {
         return;
     }
 
-    req.client = token;
+    req.client = (type) => `${type}_${token}`;
     next();
 };

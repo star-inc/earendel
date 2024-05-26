@@ -37,7 +37,7 @@ const temp = useTemp("earendel");
 
 const downloadHandler = (req, res) => {
     const cache = useCache();
-    const token = req.client;
+    const token = req.client("file");
 
     if (!cache.has(token)) {
         res.sendStatus(StatusCodes.NOT_FOUND);
@@ -56,7 +56,7 @@ const uploadHandler = (req, res, next) => fileUpload({
     },
 })(req, res, next);
 
-const uploadFileCleaner = (req) => {
+const invalidRequestCleaner = (req) => {
     Object.entries(req.files).forEach(([_, value]) => {
         rmSync(value.tempFilePath);
     });
@@ -68,22 +68,33 @@ const validHandler = (req, res) => {
         return;
     }
     if (!isObjectPropExists(req.files, "file")) {
-        uploadFileCleaner(req);
+        invalidRequestCleaner(req);
         res.sendStatus(StatusCodes.BAD_REQUEST);
         return;
     }
 
     const cache = useCache();
-    const token = req.client;
+    const token = req.client("file");
 
     if (cache.has(token)) {
-        const oldFilePath = cache.get(token);
-        rmSync(oldFilePath);
         cache.del(token);
     }
 
     const {file} = req.files;
     cache.set(token, file.tempFilePath);
+    res.sendStatus(StatusCodes.OK);
+};
+
+const deleteHandler = (req, res) => {
+    const cache = useCache();
+    const token = req.client("file");
+
+    if (!cache.has(token)) {
+        res.sendStatus(StatusCodes.NOT_FOUND);
+        return;
+    }
+
+    cache.del(token);
     res.sendStatus(StatusCodes.OK);
 };
 
@@ -96,6 +107,10 @@ router.put("/:token", clientAuth,
     validHandler,
 );
 
+router.delete("/:token", clientAuth,
+    deleteHandler,
+);
+
 // Export routes mapper (function)
 export default () => {
     // Use application
@@ -103,4 +118,11 @@ export default () => {
 
     // Mount the router
     app.use("/file", router);
+
+    const cache = useCache();
+    cache.on("del", (key, value) => {
+        if (key.startsWith("file_")) {
+            rmSync(value);
+        }
+    });
 };
