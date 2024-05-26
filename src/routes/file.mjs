@@ -63,11 +63,10 @@ const invalidRequestCleaner = (req) => {
 };
 
 const validHandler = (req, res) => {
-    if (!req.files) {
-        res.sendStatus(StatusCodes.BAD_REQUEST);
-        return;
-    }
-    if (!isObjectPropExists(req.files, "file")) {
+    if (
+        !isObjectPropExists(req.files, "file") ||
+        Object.keys(req.files).length !== 1
+    ) {
         invalidRequestCleaner(req);
         res.sendStatus(StatusCodes.BAD_REQUEST);
         return;
