@@ -11,8 +11,8 @@ import {
     useCache,
 } from "../init/cache.mjs";
 import {
-    useTmpPath,
-} from "../init/tmppath.mjs";
+    useTemp,
+} from "../init/temp.mjs";
 
 import {
     useClientAuth,
@@ -33,7 +33,7 @@ const router = newRouter();
 
 const clientAuth = useClientAuth();
 
-const tmpPath = useTmpPath("earendel");
+const temp = useTemp("earendel");
 
 const downloadHandler = (req, res) => {
     const cache = useCache();
@@ -50,7 +50,7 @@ const downloadHandler = (req, res) => {
 
 const uploadHandler = (req, res, next) => fileUpload({
     useTempFiles: true,
-    tempFileDir: tmpPath.path,
+    tempFileDir: temp.path,
     limits: {
         fileSize: 50 * 1024 * 1024,
     },

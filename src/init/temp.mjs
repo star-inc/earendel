@@ -13,25 +13,25 @@ import {
     rimrafSync,
 } from "rimraf";
 
-const tmpPathPrefix = tmpdir();
-const tmpPathMap = {};
+const tempPathPrefix = tmpdir();
+const tempPathMap = {};
 
-export const useTmpPath = (name) => {
-    const path = pathJoin(tmpPathPrefix, name);
+export const useTemp = (name) => {
+    const path = pathJoin(tempPathPrefix, name);
     const cleanup = () => {
-        delete tmpPathMap[name];
+        delete tempPathMap[name];
         rimrafSync(path);
     };
     mkdirSync(path, {
         recursive: true,
     });
-    tmpPathMap[name] = path;
+    tempPathMap[name] = path;
     return {path, cleanup};
 };
 
 // Handle exit signals
 export const exitHandler = () => {
-    Object.values(tmpPathMap).forEach((path) => {
+    Object.values(tempPathMap).forEach((path) => {
         rimrafSync(path);
     });
 };
