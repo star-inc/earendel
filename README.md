@@ -6,6 +6,8 @@ The server provides a simple API for caching data like text or binary files.
 
 ## Installation
 
+Install the dependencies.
+
 ```shell
 npm install
 ```
@@ -28,6 +30,8 @@ npm start
 ```
 
 ## API
+
+The API documentation of earendel.
 
 ### GET /token
 
