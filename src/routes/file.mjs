@@ -33,7 +33,7 @@ const router = newRouter();
 
 const clientAuth = useClientAuth();
 
-const temp = useTemp("earendel");
+const temp = useTemp("earendel_file");
 
 const downloadHandler = (req, res) => {
     const cache = useCache();
