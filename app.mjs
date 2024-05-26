@@ -22,7 +22,6 @@ const pluginPromises = [];
 // Define router names
 const routerNames = [
     "root",
-    "session",
     "text",
     "file",
 ];
