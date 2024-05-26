@@ -1,7 +1,7 @@
 // Constants
 
-export const APP_NAME = "lavateinn";
-export const APP_DESCRIPTION = "Tiny microservice framework with flexible.";
+export const APP_NAME = "earendel";
+export const APP_DESCRIPTION = "Simple caching server for DevOps. ";
 
 export const APP_VERSION = "latest";
 

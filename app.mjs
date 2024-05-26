@@ -13,17 +13,14 @@ import {
 } from "./src/execute.mjs";
 
 // Define plugin promises
-const pluginPromises = [
-    new Promise((resolve) => {
-        console.info("The example to wait the plugin promise.");
-        setTimeout(resolve, 3000);
-    }),
-];
+const pluginPromises = [];
 
 // Define router names
 const routerNames = [
     "root",
-    "example",
+    "session",
+    "text",
+    "file",
 ];
 
 // Define display

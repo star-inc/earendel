@@ -1,4 +1,4 @@
-# lavateinn
+# earendel
 
 Tiny microservice framework with flexible.
 
