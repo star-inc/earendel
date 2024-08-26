@@ -5,7 +5,7 @@ import {getMust} from "../config.mjs";
 import NodeCache from "node-cache";
 
 // Initialize node-cache
-const stdTTL = getMust("CACHE_MAX_TTL");
+const stdTTL = getMust("CACHE_STD_TTL");
 const cache = new NodeCache({stdTTL: parseInt(stdTTL)});
 
 // Export as a function named useCache
