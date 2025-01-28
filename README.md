@@ -1,6 +1,6 @@
-# earendel
+# Earendel
 
-Simple caching server for DevOps.
+Simple cache server for DevOps.
 
 The server provides a simple API for caching data like text or binary files.
 

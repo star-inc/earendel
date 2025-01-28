@@ -1,3 +1,6 @@
+// Earendel - Simple cache server for DevOps.
+// SPDX-License-Identifier: BSD-3-Clause
+
 // Import modules
 import {
     StatusCodes,

@@ -1,3 +1,6 @@
+// Lavateinn - Tiny and flexible microservice framework.
+// SPDX-License-Identifier: BSD-3-Clause (https://ncurl.xyz/s/mI23sevHR)
+
 // Import modules
 import {
     getMust,
@@ -5,7 +8,6 @@ import {
 } from "./config.mjs";
 
 import process from "node:process";
-
 import http from "node:http";
 import https from "node:https";
 
@@ -18,13 +20,20 @@ import {
 } from "./init/express.mjs";
 
 import {
+    instanceRole,
+    setupClusterPrimary,
+    setupClusterWorker,
+} from "./init/instance.mjs";
+
+import {
     camelToSnakeCase,
 } from "./utils/native.mjs";
 
 /**
  * Setup protocol - http
- * @param {object} app
- * @return {Promise<object>} the setup status
+ * @module src/execute
+ * @param {object} app - The application.
+ * @returns {Promise<object>} The setup status.
  */
 function setupHttpProtocol(app) {
     const protocol = "http";
@@ -39,8 +48,9 @@ function setupHttpProtocol(app) {
 
 /**
  * Setup protocol - https
- * @param {object} app
- * @return {Promise<object>} the setup status
+ * @module src/execute
+ * @param {object} app - The application.
+ * @returns {Promise<object>} The setup status.
  */
 async function setupHttpsProtocol(app) {
     const protocol = "https";
@@ -60,38 +70,23 @@ async function setupHttpsProtocol(app) {
 
 /**
  * Defines an application invoker.
- * @return {object} the application invoker
+ * @module src/execute
+ * @returns {object} The application invoker.
  */
 export function invokeApp() {
     return {
-        loadPromises,
         loadRoutes,
+        loadInits,
         loadExits,
         execute,
     };
 }
 
-// Define preparing promises
-const preparingPromises = [];
-
-/**
- * Load promises to be executed before running the application.
- * @param {Promise[]} promises the promises to load
- * @return {object} the application invoker
- */
-function loadPromises(promises) {
-    if (promises.length < 1) {
-        return invokeApp();
-    }
-
-    preparingPromises.push(...promises);
-    return invokeApp();
-}
-
 /**
  * Load routes from specified router names.
- * @param {string[]} routerNames the names of the routers to load
- * @return {object} the application invoker
+ * @module src/execute
+ * @param {string[]} routerNames - The names of the routers to load.
+ * @returns {object} The application invoker.
  */
 function loadRoutes(routerNames) {
     routerNames = routerNames.map(camelToSnakeCase);
@@ -104,41 +99,101 @@ function loadRoutes(routerNames) {
     const routerMappers = routeFilenames.map((n) => import(n));
     routerMappers.forEach((c) => c.then((f) => f.default()));
 
+    // Return application invoker
+    return invokeApp();
+}
+
+// Define initial promises
+const initPromises = [];
+
+/**
+ * @callback VoidCallback
+ * @returns {Promise<void>|void}
+ */
+
+/**
+ * Load init application handlers.
+ * @module src/execute
+ * @param {VoidCallback[]} initHandlers - The init signal handlers.
+ * @returns {object} The application invoker.
+ */
+function loadInits(initHandlers) {
+    // Primary instance won't setup any init handlers
+    if (instanceRole === "primary") {
+        // Return application invoker
+        return invokeApp();
+    }
+
+    // Handle init signals
+    const promises = initHandlers.map((f) => f());
+
+    // Push the initial handlers onto the preparing promises
+    initPromises.push(...promises);
+
+    // Return application invoker
     return invokeApp();
 }
 
 /**
  * Load exit signal handlers.
- * @param {object} exitHandlers the exit signal handlers
- * @return {object} the application invoker
+ * @module src/execute
+ * @param {VoidCallback[]} exitHandlers - The exit signal handlers.
+ * @returns {object} The application invoker.
  */
 function loadExits(exitHandlers) {
+    // Primary instance won't setup any exit handlers
+    if (instanceRole === "primary") {
+        // Return application invoker
+        return invokeApp();
+    }
+
     // Handle exit signals
-    const exitHandler = () => {
-        exitHandlers.forEach((f) => f());
+    const exitHandler = async () => {
+        const promises = exitHandlers.map((f) => f());
+        // Wait for all exit handlers resolved
+        await Promise.all(promises);
+        // Send exit signal
         process.exit(0);
     };
+
+    // Define exit signals
     const exitSignals = [
         "SIGINT",
         "SIGTERM",
         "SIGQUIT",
     ];
+
+    // Attach exit handlers
     exitSignals.forEach((signal) => {
         process.on(signal, exitHandler);
     });
+
+    // Return application invoker
     return invokeApp();
 }
 
 /**
- * Prepare the application and automatically detect protocols.
- * @return {Promise<void[]>} a promise that resolves when prepared
+ * Prepare the application and detect protocols automatically.
+ * @module src/execute
+ * @returns {Promise<object[]>} A promise that resolves
+ * when prepared protocols, empty array returned if
+ * in cluster mode and primary instance.
  */
 async function execute() {
+    // Setup cluster
+    if (instanceRole === "primary") {
+        setupClusterPrimary();
+        return []; // The primary instance won't setup any protocol
+    }
+    if (instanceRole === "worker") {
+        await setupClusterWorker();
+    }
+
     // Use application
     const app = useApp();
 
-    // Wait preparing promises
-    await Promise.all(preparingPromises);
+    // Wait for all init promises resolved
+    await Promise.all(initPromises);
 
     // Get enabled protocols
     const enabledProtocols = getSplited("ENABLED_PROTOCOLS");
@@ -160,5 +215,6 @@ async function execute() {
         );
     }
 
-    return Promise.all(setupPromises);
+    // Return setup promises
+    return setupPromises;
 }

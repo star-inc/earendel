@@ -1,17 +1,24 @@
 {
   "name": "earendel",
+  "private": true,
   "version": "1.0.0",
-  "description": "Simple caching server for DevOps. ",
+  "description": "Simple cache server for DevOps.",
   "author": "Star Inc.",
-  "homepage": "https://starinc.xyz",
-  "license": "MIT",
+  "homepage": "https://github.com/star-inc/lavateinn",
+  "repository": "https://github.com/star-inc/lavateinn",
+  "license": "BSD-3-Clause",
   "main": "app.mjs",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "nodemon app.mjs",
     "start": "node app.mjs",
     "lint": "npx lint-staged",
-    "lint:es": "eslint \"*.mjs\" \"src/**/*.mjs\"",
-    "lint:es:fix": "eslint \"*.mjs\" \"src/**/*.mjs\" --fix",
+    "lint:es": "eslint .",
+    "lint:es:fix": "eslint . --fix",
+    "test": "mocha test --exit --recursive --timeout 5000",
+    "cover": "nyc mocha test --recursive --timeout 5000 --exit",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -20,25 +27,31 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "express-fileupload": "^1.5.0",
-    "express-validator": "^6.14.3",
+    "express": "^5.0.1",
+    "express-fileupload": "^1.5.1",
+    "express-validator": "^7.2.1",
     "http-status-codes": "^2.2.0",
-    "nanoid": "^5.0.7",
+    "nanoid": "^5.0.8",
     "node-cache": "^5.1.2",
-    "request-ip": "^3.3.0",
-    "rimraf": "^5.0.7"
+    "node-schedule": "^2.1.1",
+    "rimraf": "^5.0.7",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
     "@commitlint/config-conventional": "^17.4.4",
+    "chai": "^5.1.2",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.17.0",
-    "eslint-config-google": "^0.14.0",
+    "eslint-config-nymph": "^0.15.0",
     "eslint-plugin-jsdoc": "^48.2.3",
+    "eslint-plugin-mocha": "^10.5.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.0",
-    "nodemon": "^2.0.13"
+    "mocha": "^11.0.1",
+    "nodemon": "^2.0.13",
+    "nyc": "^17.1.0",
+    "supertest": "^7.0.0"
   },
   "config": {
     "commitizen": {

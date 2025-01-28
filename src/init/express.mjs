@@ -1,16 +1,24 @@
+// Lavateinn - Tiny and flexible microservice framework.
+// SPDX-License-Identifier: BSD-3-Clause (https://ncurl.xyz/s/mI23sevHR)
+
 // express.js is a web framework.
 
 // Import modules
-import {getEnabled} from "../config.mjs";
 import express from "express";
+import {StatusCodes} from "http-status-codes";
 
-// Create middleware handlers
-import requestIpMiddleware from "request-ip";
+// Import config
+import {getSplited, getEnabled} from "../config.mjs";
+
+// Import middleware
+import middlewareInstance from "../middleware/instance.mjs";
 import middlewareHttpsRedirect from "../middleware/https_redirect.mjs";
 import middlewareCORS from "../middleware/cors.mjs";
 import middlewareOrigin from "../middleware/origin.mjs";
 
-// Read config
+// Read configuration
+const trustProxy = getSplited("TRUST_PROXY", ",");
+
 const isEnabledRedirectHttpHttps = getEnabled("ENABLED_REDIRECT_HTTP_HTTPS");
 const isEnabledCors = getEnabled("ENABLED_CORS");
 const isEnabledCorsOriginCheck = getEnabled("ENABLED_CORS_ORIGIN_CHECK");
@@ -18,8 +26,13 @@ const isEnabledCorsOriginCheck = getEnabled("ENABLED_CORS_ORIGIN_CHECK");
 // Initialize app engine
 const app = express();
 
-// Register global middleware
-app.use(requestIpMiddleware.mw());
+// Required middleware
+app.use(middlewareInstance);
+
+// Optional settings
+if (trustProxy.length) {
+    app.set("trust proxy", trustProxy);
+}
 
 // Optional middleware
 if (isEnabledRedirectHttpHttps) {
@@ -35,8 +48,14 @@ if (isEnabledCors && isEnabledCorsOriginCheck) {
     app.use(middlewareOrigin);
 }
 
-// Export useFunction
-export const useApp = () => app;
+/**
+ * Composable application.
+ * @module src/init/express
+ * @returns {express.Application} The express app.
+ */
+export function useApp() {
+    return app;
+}
 
 // Export express for shortcut
-export {express};
+export {express, StatusCodes};

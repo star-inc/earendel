@@ -1,3 +1,6 @@
+// Earendel - Simple cache server for DevOps.
+// SPDX-License-Identifier: BSD-3-Clause
+
 // Import modules
 import {
     useApp,
@@ -25,7 +28,7 @@ import {
 import fileUpload from "express-fileupload";
 
 import {
-    isObjectPropExists,
+    hasProp,
 } from "../utils/native.mjs";
 
 const {Router: newRouter} = express;
@@ -64,10 +67,13 @@ const invalidRequestCleaner = (req) => {
 
 const validHandler = (req, res) => {
     if (
-        !isObjectPropExists(req.files, "file") ||
+        !req.files ||
+        !hasProp(req.files, "file") ||
         Object.keys(req.files).length !== 1
     ) {
-        invalidRequestCleaner(req);
+        if (req.files) {
+            invalidRequestCleaner(req);
+        }
         res.sendStatus(StatusCodes.BAD_REQUEST);
         return;
     }
@@ -119,7 +125,7 @@ export default () => {
     app.use("/file", router);
 
     const cache = useCache();
-    cache.on("del", (key, value) => {
+    cache.rawClient().on("del", (key, value) => {
         if (key.startsWith("file_")) {
             rmSync(value);
         }
