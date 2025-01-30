@@ -1,6 +1,11 @@
 // Earendel - Simple cache server for DevOps.
 // SPDX-License-Identifier: BSD-3-Clause
 
+// Import config
+import {
+    get,
+} from "../config.mjs";
+
 // Import modules
 import {
     useApp,
@@ -51,11 +56,12 @@ const downloadHandler = (req, res) => {
     res.download(tempFilePath, "cache.bin");
 };
 
+const uploadMaxFileSize = get("UPLOAD_MAX_FILE_SIZE");
 const uploadHandler = (req, res, next) => fileUpload({
     useTempFiles: true,
     tempFileDir: temp.path,
     limits: {
-        fileSize: 50 * 1024 * 1024,
+        fileSize: parseInt(uploadMaxFileSize),
     },
 })(req, res, next);
 

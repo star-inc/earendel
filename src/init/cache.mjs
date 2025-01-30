@@ -29,7 +29,7 @@ class Cache {
 
     /**
      * Get the raw node-cache client.
-     * @returns {any} The client.
+     * @returns {NodeCache} The client.
      */
     rawClient() {
         return this._cacheClient;
