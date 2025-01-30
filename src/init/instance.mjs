@@ -21,24 +21,19 @@ import {
 
 import {
     isCluster,
-    getMust,
+    get,
 } from "../config.mjs";
 
 // Define instance id
 export const instanceId = `${APP_NAME}#${nanoid()}`;
 
 // Define instance http url (aka. canonical url)
-export const instanceUrl = getMust("INSTANCE_URL");
+export const instanceUrl = get("INSTANCE_URL");
 
 // Define instance role (single, primary or worker)
 export const instanceRole = isCluster() ? (
     cluster.isPrimary ? "primary" : "worker"
 ) : "single";
-
-// Earendel only can be allowed to use "single" mode
-if (instanceRole !== "single") {
-    throw new Error("earendel only can be allowed to use \"single\" mode");
-}
 
 // Define instance context
 export const instanceContext = new Map();
