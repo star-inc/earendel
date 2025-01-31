@@ -29,6 +29,11 @@ import {
     exitHandler as tempExitHandler,
 } from "./src/init/temp.mjs";
 
+// The application only can be allowed to use "single" mode
+if (instanceRole !== "single") {
+    throw new Error("the app only can be allowed to use \"single\" mode");
+}
+
 // Define router names
 const routerNames = [
     "root",
