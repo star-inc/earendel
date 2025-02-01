@@ -21,6 +21,19 @@ describe("Root Routes", () => {
     it("GET / should return the API index message", async () => {
         const res = await request(app).get("/");
         expect(res.status).to.equal(StatusCodes.IM_A_TEAPOT);
+        expect(res.text).to.include("earendel");
+    });
+
+    it("GET /heart should return the instance ID", async () => {
+        const res = await request(app).get("/heart");
+        expect(res.status).to.equal(StatusCodes.OK);
+        expect(res.text).to.be.a("string");
+    });
+
+    it("GET /token should return a new token", async () => {
+        const res = await request(app).get("/token");
+        expect(res.status).to.equal(StatusCodes.OK);
+        expect(res.text).to.be.a("string");
     });
 
     it("GET /robots.txt should return the robots.txt content", async () => {
