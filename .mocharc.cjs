@@ -3,7 +3,5 @@
 "use strict";
 
 module.exports = {
-    extends: [
-        "@commitlint/config-conventional",
-    ],
+    require: "./test/init.mjs",
 };

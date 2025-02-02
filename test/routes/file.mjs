@@ -1,8 +1,6 @@
 // Earendel - Simple cache server for DevOps.
 // SPDX-License-Identifier: BSD-3-Clause
 
-import "../../src/init/config.mjs";
-
 import {describe, it} from "mocha";
 import {expect} from "chai";
 import request from "supertest";
